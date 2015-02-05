@@ -1,0 +1,4 @@
+name: ${project.name}
+authors: [ ${project.authors} ]
+main: ${project.groupId}.${project.artifactId}.${project.plugin}
+version: ${project.version}
