@@ -50,7 +50,7 @@ public class CartSummonListener implements Listener {
 		}
 
 		World world = buttonBlock.getWorld();
-		RideableMinecart cart = (RideableMinecart) world.spawnEntity(new Location(world, sign.getX() + 0.5, sign.getY() + 0.5, sign.getZ() + 0.5), EntityType.MINECART);
+		RideableMinecart cart = (RideableMinecart) world.spawnEntity(sign.getAbsoluteLocation(), EntityType.MINECART);
 		if (cart == null) {
 			player.sendMessage(ChatColor.RED + "Plugin was unable to spawn a cart");
 			return;

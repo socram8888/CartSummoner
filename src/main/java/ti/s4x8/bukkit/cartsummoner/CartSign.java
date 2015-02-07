@@ -1,6 +1,7 @@
 
 package ti.s4x8.bukkit.cartsummoner;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -22,6 +23,8 @@ public class CartSign {
 	private int z;
 	private boolean zRelative;
 
+	private Location blockLocation = null;
+
 	public CartSign(Block block) throws InvalidCartSignException {
 		Material signMaterial = block.getType();
 
@@ -31,6 +34,7 @@ public class CartSign {
 
 		Sign sign = (Sign) block.getState();
 		fromLines(sign.getLines());
+		blockLocation = sign.getLocation();
 	}
 
 	public CartSign(String[] text) throws InvalidCartSignException {
@@ -42,7 +46,7 @@ public class CartSign {
 			throw new NotACartSignException("Invalid header");
 		}
 
-		String[] params = Utils.cleanString(text[1] + "\n" + text[2] + "\n" + text[3]).split(" ");
+		String[] params = Utils.cleanString(text[1] + '\n' + text[2] + '\n' + text[3]).split(" ");
 		if (params.length != 3) {
 			throw new InvalidCartSignException("Invalid amount of parameters");
 		}
@@ -73,11 +77,19 @@ public class CartSign {
 		return new CartSign(signBlock);
 	}
 
-	public Location getLocation(Location base) {
+	public Location getAbsoluteLocation(Location base) {
 		double locX = (xRelative ? base.getX() + x : x);
 		double locY = (yRelative ? base.getY() + y : y);
 		double locZ = (zRelative ? base.getZ() + z : z);
 
 		return new Location(base.getWorld(), locX, locY, locZ);
+	}
+
+	public Location getAbsoluteLocation() {
+		if (blockLocation == null) {
+			throw new IllegalStateException("No known physical block attached to this sign");
+		}
+
+		return getAbsoluteLocation(blockLocation);
 	}
 }
