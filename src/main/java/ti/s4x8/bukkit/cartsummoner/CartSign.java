@@ -15,26 +15,22 @@ public class CartSign {
 	public static final String SIGN_HEADER = "[cartsummon]";
 
 	private int x;
-	private boolean xRelative;
-
 	private int y;
-	private boolean yRelative;
-
 	private int z;
-	private boolean zRelative;
+	private boolean relative;
 
-	private Location blockLocation = null;
+	private Block signBlock = null;
 
 	public CartSign(Block block) throws InvalidCartSignException {
-		Material signMaterial = block.getType();
+		signBlock = block;
 
+		Material signMaterial = block.getType();
 		if (!Material.SIGN_POST.equals(signMaterial) && !Material.WALL_SIGN.equals(signMaterial)) {
 			throw new NotACartSignException("Not a sign!");
 		}
 
 		Sign sign = (Sign) block.getState();
 		fromLines(sign.getLines());
-		blockLocation = sign.getLocation();
 	}
 
 	public CartSign(String[] text) throws InvalidCartSignException {
@@ -47,20 +43,27 @@ public class CartSign {
 		}
 
 		String[] params = Utils.cleanString(text[1] + '\n' + text[2] + '\n' + text[3]).split(" ");
-		if (params.length != 3) {
-			throw new InvalidCartSignException("Invalid amount of parameters");
-		}
+		switch (params.length) {
+			case 4:
+				if (Utils.partialMatch("relative", params[3])) {
+					relative = true;
+				} else {
+					throw new InvalidCartSignException("Unknown modifier \"" + params[3] + "\"");
+				}
+				// *** FALLTHROUGH ***
 
-		xRelative = (params[0].charAt(0) == '+' || params[0].charAt(0) == '-');
-		yRelative = (params[1].charAt(0) == '+' || params[1].charAt(0) == '-');
-		zRelative = (params[2].charAt(0) == '+' || params[2].charAt(0) == '-');
+			case 3:
+				try {
+					x = Integer.parseInt(params[0]);
+					y = Integer.parseInt(params[1]);
+					z = Integer.parseInt(params[2]);
+				} catch (NumberFormatException e) {
+					throw new InvalidCartSignException("Invalid coords");
+				}
+				break;
 
-		try {
-			x = Integer.parseInt(params[0]);
-			y = Integer.parseInt(params[1]);
-			z = Integer.parseInt(params[2]);
-		} catch (NumberFormatException e) {
-			throw new InvalidCartSignException("Invalid coords");
+			default:
+				throw new InvalidCartSignException("Invalid amount of parameters");
 		}
 	}
 
@@ -77,19 +80,19 @@ public class CartSign {
 		return new CartSign(signBlock);
 	}
 
-	public Location getAbsoluteLocation(Location base) {
-		double locX = (xRelative ? base.getX() + x : x);
-		double locY = (yRelative ? base.getY() + y : y);
-		double locZ = (zRelative ? base.getZ() + z : z);
+	public Location getAbsoluteLocation(Block base) {
+		double locX = (relative ? base.getX() + x : x);
+		double locY = (relative ? base.getY() + y : y);
+		double locZ = (relative ? base.getZ() + z : z);
 
-		return new Location(base.getWorld(), locX, locY, locZ);
+		return new Location(base.getWorld(), locX + 0.5, locY + 0.5, locZ + 0.5);
 	}
 
 	public Location getAbsoluteLocation() {
-		if (blockLocation == null) {
+		if (signBlock == null) {
 			throw new IllegalStateException("No known physical block attached to this sign");
 		}
 
-		return getAbsoluteLocation(blockLocation);
+		return getAbsoluteLocation(signBlock);
 	}
 }

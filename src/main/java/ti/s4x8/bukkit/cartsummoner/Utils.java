@@ -22,4 +22,17 @@ public final class Utils {
 	public static int secondsToTicks(int seconds) {
 		return seconds * TICKS_PER_SECOND;
 	}
+
+	public static boolean partialMatch(String a, String b) {
+		if (a == null) {
+			return b == null;
+		}
+
+		int len = Math.min(a.length(), b.length());
+		if (len == 0) {
+			return false;
+		}
+
+		return a.substring(0, len).equalsIgnoreCase(b.substring(0, len));
+	}
 }
