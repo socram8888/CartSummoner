@@ -1,5 +1,5 @@
 
-package ti.s4x8.bukkit.cartsummoner;
+package es.dracon.bukkit.cartsummoner;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
