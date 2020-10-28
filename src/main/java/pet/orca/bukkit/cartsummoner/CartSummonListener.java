@@ -1,11 +1,13 @@
 
-package es.dracon.bukkit.cartsummoner;
+package pet.orca.bukkit.cartsummoner;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.FaceAttachable;
+import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.RideableMinecart;
@@ -14,7 +16,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.material.Button;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
@@ -80,10 +81,14 @@ public class CartSummonListener implements Listener {
 			return null;
 		}
 
-		Button button = (Button) buttonBlock.getState().getData();
-		BlockFace buttonFacing = button.getFacing();
+		Switch button = (Switch) buttonBlock.getBlockData();
 
-		Block airBlock1 = buttonBlock.getRelative(buttonFacing);
+		if (button.getAttachedFace() != FaceAttachable.AttachedFace.WALL) {
+			return null;
+		}
+
+		BlockFace attachedFace = button.getFacing();
+		Block airBlock1 = buttonBlock.getRelative(attachedFace);
 		if (!MaterialFamily.SAFE_AIR_BLOCKS.hasMaterial(airBlock1)) {
 			return null;
 		}

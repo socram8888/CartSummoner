@@ -1,5 +1,5 @@
 
-package es.dracon.bukkit.cartsummoner;
+package pet.orca.bukkit.cartsummoner;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
